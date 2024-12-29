@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
+import com.javaweb.Builder.Buildingsearchbuilder;
 import com.javaweb.Config.ModelMapperConfig;
 import com.javaweb.Model.BuildingDTO;
 import com.javaweb.repository.BuildingRepository;
@@ -28,6 +29,7 @@ public class BuildingDTOConverter {
 	@Autowired
 	private ModelMapper mapper;
 
+	
 	public BuildingDTO tobuildingDto(BuidingEntity bd) {
 		BuildingDTO buildto =mapper.map(bd,BuildingDTO.class);
 //		buildto.setName(bd.getName());

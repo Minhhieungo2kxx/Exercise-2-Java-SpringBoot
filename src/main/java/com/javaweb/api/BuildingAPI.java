@@ -30,7 +30,7 @@ import com.javaweb.service.Buildingservice;
 
 import customexception.FiledRequiredException;
 
-//@Controller
+
 @RestController // no bao gom ca cac phan Controller +co them Resonbody
 public class BuildingAPI {
 	
