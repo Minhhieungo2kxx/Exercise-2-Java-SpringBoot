@@ -13,6 +13,9 @@ import java.util.Map;
 import javax.sql.rowset.Joinable;
 
 import org.apache.naming.java.javaURLContextFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,9 +30,22 @@ import com.javaweb.repository.BuildingRepository;
 import com.javaweb.repository.Entity.BuidingEntity;
 
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
+import jakarta.transaction.Transactional;
+
+
 @Repository
-public class BuildingRepositoryimpl implements BuildingRepository {
+@PropertySource("classpath:application.properties")
+@Primary
+//@Transactional
+public class BuildingRepositoryJPAipl implements BuildingRepository {
 	
+
+	
+	@PersistenceContext
+	private EntityManager entityManager;
 
 
 	public static void joinTable(Buildingsearchbuilder buildingsearch,StringBuilder sql) {
@@ -114,44 +130,19 @@ public class BuildingRepositoryimpl implements BuildingRepository {
 
 	}
 
+	//su dung JPA thao tac voi co so du lieu
 	@Override
 	public List<BuidingEntity> FindAll(Buildingsearchbuilder buildingsearchbuilder) {
 		StringBuilder sql =new StringBuilder("SELECT b.id,b.name,b.districtid,b.street,b.ward,b.numberofbasement,b.floorarea,b.rentprice,b.managername,b.managerphonenumber,b.servicefee,b.brokeragefee,b.createddate  FROM building b  ");
-		List<BuidingEntity> list = new ArrayList<>();
-		
+	
 		joinTable(buildingsearchbuilder,sql);
         StringBuilder where=new StringBuilder("where 1=1 ");
         queryNomal(buildingsearchbuilder, where);
         querySpecial(buildingsearchbuilder, where);
         where.append("group by b.id");
         sql.append(where);
-		
-		try (Connection con = ConnectionJDBCUtils.getConnection();
+        Query query=entityManager.createNativeQuery(sql.toString(),BuidingEntity.class);
+        return query.getResultList();
 
-				Statement st = con.createStatement();
-				ResultSet rs = st.executeQuery(sql.toString());) {
-
-			while (rs.next()) {
-				BuidingEntity bd =new BuidingEntity();
-				bd.setId(rs.getLong("b.id"));
-				bd.setName(rs.getString("b.name"));
-				bd.setWard(rs.getString("b.ward"));
-				bd.setDistrictid(rs.getLong("b.districtid"));
-				bd.setStreet(rs.getString("b.street"));
-				bd.setFloorArea(rs.getLong("b.floorarea"));
-				bd.setRentPrice(rs.getLong("b.rentprice"));
-				bd.setServiceFee(rs.getString("b.servicefee"));
-				bd.setBrokerageFee (rs.getLong("b.brokeragefee"));
-				bd.setManagerName(rs.getString("b.managername"));
-				bd.setManagerPhone(rs.getString("b.managerphonenumber"));
-				list.add(bd);
-			}
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-
-		}
-
-		return list;
 	}
 }
